@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-10-29T11:15:36.484024",
+  "source_file": "C:\\Users\\muthu\\.gemini\\antigravity\\scratch\\mini-bi-assistant\\data\\sales_transactions.csv",
+  "target_database": "C:\\Users\\muthu\\.gemini\\antigravity\\scratch\\mini-bi-assistant\\data\\sales.db",
+  "total_raw_rows": 51,
+  "total_processed_rows": 51,
+  "completed_transactions": 50,
+  "returned_transactions": 1,
+  "imputed_records": 1,
+  "total_gross_revenue_completed": 1449700.0,
+  "total_net_revenue_completed": 1445200.0,
+  "total_discounts_completed": 4500.0,
+  "cleaning_events": [
+    {
+      "row_index": 50,
+      "transaction_id": "TXN0051",
+      "issue": "Missing unit_price",
+      "product": "Laptop Stand",
+      "resolution": "Imputed using historical median unit price for product",
+      "imputed_value": 1200.0
+    },
+    {
+      "row_index": 33,
+      "transaction_id": "TXN0034",
+      "issue": "Zero quantity transaction",
+      "resolution": "Preserved in database with zero revenue",
+      "details": "Product: Keyboard, Status: Completed"
+    },
+    {
+      "row_index": 32,
+      "transaction_id": "TXN0033",
+      "issue": "Returned order status",
+      "resolution": "Tagged as Returned; analytics queries default to Completed transactions",
+      "details": "Gross amount: 19000.0"
+    }
+  ]
+}

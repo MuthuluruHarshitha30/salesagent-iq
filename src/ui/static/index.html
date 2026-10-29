@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SalesAgent IQ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 3v18h18" />
+            <path d="M18 9l-5 5-4-4-4 4" />
+          </svg>
+        </div>
+        <div>
+          <h1>SalesAgent IQ</h1>
+          <p class="subtitle">Vectorless RAG &bull; Deterministic SQL &bull; Read-Only Guardrails</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span class="badge badge-success"><span class="pulse-dot"></span> SQLite Live (Read-Only)</span>
+        <button id="schemaBtn" class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          Schema &amp; Data Hygiene
+        </button>
+      </div>
+    </header>
+
+    <!-- Top KPI Cards -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-label">Total Net Revenue</span>
+        <span class="kpi-value" id="kpiRevenue">$1,445,200.00</span>
+        <span class="kpi-sub">50 Completed Orders</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Top Product</span>
+        <span class="kpi-value" id="kpiProduct">Monitor</span>
+        <span class="kpi-sub">$473,000.00 Net Revenue</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Top Sales Region</span>
+        <span class="kpi-value" id="kpiRegion">South</span>
+        <span class="kpi-sub">$411,200.00 Net Revenue</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Total Units Sold</span>
+        <span class="kpi-value" id="kpiUnits">638</span>
+        <span class="kpi-sub">Total Discounts: $4,500.00</span>
+      </div>
+    </section>
+
+    <!-- Query Input Box -->
+    <section class="query-section card">
+      <h2 class="section-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        Ask Any Question — SalesAgent IQ
+      </h2>
+      <form id="queryForm" class="query-form">
+        <div class="input-wrapper">
+          <input
+            type="text"
+            id="questionInput"
+            placeholder="e.g. Which product generated the highest revenue? or How many units of Office Chair sold in South?"
+            autocomplete="off"
+            required
+          />
+          <button type="button" id="clearBtn" class="clear-btn" title="Clear input">&times;</button>
+        </div>
+        <button type="submit" id="submitBtn" class="btn btn-primary">
+          <span class="btn-text">Ask AI</span>
+          <span class="spinner" style="display: none;"></span>
+        </button>
+      </form>
+
+      <!-- Suggested Question Chips -->
+      <div class="chips-container">
+        <span class="chips-label">Suggested Questions:</span>
+        <div class="chips-scroll">
+          <button class="chip" data-q="What is the total revenue?">Total Revenue</button>
+          <button class="chip" data-q="What are the different products?">Different Products</button>
+          <button class="chip" data-q="What are the categories?">Categories</button>
+          <button class="chip" data-q="Which product generated the highest revenue?">Top Product</button>
+          <button class="chip" data-q="What is the monthly revenue trend?">Monthly Revenue Trend</button>
+          <button class="chip" data-q="Which region generated the highest sales?">Top Region</button>
+          <button class="chip" data-q="How did revenue change between January and February?">Jan vs Feb Change</button>
+          <button class="chip" data-q="How many units of Office Chair were sold in South region?">Office Chair in South</button>
+          <button class="chip" data-q="What is the total discount given in Electronics?">Electronics Discounts</button>
+          <button class="chip" data-q="Compare online and retail sales">Online vs Retail</button>
+          <button class="chip" data-q="List all returned orders">Returned Orders</button>
+          <button class="chip" data-q="Show orders with discount greater than 500">Discount &gt; $500</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Error Alert Banner -->
+    <div id="errorBanner" class="alert alert-danger" style="display: none;"></div>
+
+    <!-- Results Section -->
+    <main id="resultsSection" class="results-section" style="display: none;">
+      <!-- Natural Language Answer Card -->
+      <section class="card answer-card">
+        <div class="card-header">
+          <span class="badge badge-accent" id="intentBadge">TOTAL_METRIC</span>
+          <span class="exec-time" id="execTime">12.4ms</span>
+        </div>
+        <div class="answer-body">
+          <div class="answer-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <div class="answer-content">
+            <h3 class="answer-title" id="questionEcho">What is the total revenue?</h3>
+            <p class="answer-text" id="answerSummary">The net revenue is $1,445,200.00 across 50 completed transactions.</p>
+          </div>
+        </div>
+
+        <!-- Comparative KPI Delta (if comparison) -->
+        <div id="comparisonBox" class="comparison-grid" style="display: none;"></div>
+      </section>
+
+      <!-- SQL Inspection Card -->
+      <section class="card sql-card">
+        <div class="card-header">
+          <div class="sql-title-group">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            <h3>Generated SQL Query</h3>
+            <span class="badge badge-shield">&#10003; Validated Read-Only</span>
+          </div>
+          <button id="copySqlBtn" class="btn btn-sm btn-outline">Copy SQL</button>
+        </div>
+        <pre><code id="sqlDisplay" class="language-sql">SELECT ...</code></pre>
+      </section>
+
+      <!-- Chart Visualization Card -->
+      <section id="chartCard" class="card chart-card" style="display: none;">
+        <div class="card-header">
+          <h3 id="chartTitle">Data Visualization</h3>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="analyticsChart" height="280"></canvas>
+        </div>
+      </section>
+
+      <!-- Supporting Data Table Card -->
+      <section class="card table-card">
+        <div class="card-header">
+          <div class="table-title-group">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            <h3>Supporting Data Figures</h3>
+            <span class="row-count-badge" id="rowCountBadge">1 row</span>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table id="dataTable" class="data-table">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- Schema & Data Hygiene Modal -->
+    <div id="schemaModal" class="modal-backdrop" style="display: none;">
+      <div class="modal card">
+        <div class="modal-header">
+          <h2>SalesAgent IQ — Schema &amp; Data Hygiene Report</h2>
+          <button id="closeModalBtn" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <h3>Data Cleansing &amp; Ingestion Audit</h3>
+          <ul class="audit-list">
+            <li><strong>Missing Value Imputation (TXN0051):</strong> Row 51 had a null <code>unit_price</code> for <em>Laptop Stand</em>. Imputed to <strong>$1,200.00</strong> based on median unit price of all completed transactions for this product.</li>
+            <li><strong>Returns Handling (TXN0033):</strong> Order TXN0033 was <em>Returned</em> (Gross: $19,000.00). In accordance with standard accounting principles, completed revenue queries filter by <code>status = 'Completed'</code>.</li>
+            <li><strong>Zero Quantity Validation (TXN0034):</strong> Row 34 recorded 0 units ($0.00 net revenue). Retained in database for audit integrity.</li>
+            <li><strong>ISO Date Conversion:</strong> All dates standardized from <code>DD-MM-YYYY</code> to <code>YYYY-MM-DD</code> with an indexed <code>year_month</code> (e.g. <code>2026-01</code>) column for high-speed temporal aggregations.</li>
+          </ul>
+
+          <h3 style="margin-top: 1.5rem;">Relational Table: <code>sales</code></h3>
+          <div class="schema-tags">
+            <span class="tag">transaction_id (PK)</span>
+            <span class="tag">order_date (DATE)</span>
+            <span class="tag">year_month (VARCHAR)</span>
+            <span class="tag">product (VARCHAR)</span>
+            <span class="tag">category (VARCHAR)</span>
+            <span class="tag">region (VARCHAR)</span>
+            <span class="tag">sales_channel (VARCHAR)</span>
+            <span class="tag">quantity (INT)</span>
+            <span class="tag">unit_price (REAL)</span>
+            <span class="tag">discount_amount (REAL)</span>
+            <span class="tag">gross_revenue (REAL)</span>
+            <span class="tag">net_revenue (REAL)</span>
+            <span class="tag">status (VARCHAR)</span>
+            <span class="tag">is_imputed (INT)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>SalesAgent IQ &bull; Built with Python, Starlette, SQLite &amp; Vectorless RAG</p>
+    </footer>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
